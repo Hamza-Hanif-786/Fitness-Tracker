@@ -8,7 +8,8 @@ const RootLayout = () => {
     const options = [
         { label: 'Home', to: '/' },
         { label: 'About', to: '/about' },
-        { label: 'Contact', to: '/contact' }
+        { label: 'Contact', to: '/contact' },
+        { label: 'Admin', to: '/admin' }
     ];
 
     const customHeader = (
