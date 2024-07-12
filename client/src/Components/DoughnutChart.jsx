@@ -1,40 +1,77 @@
-import React, { useState, useEffect, Suspense } from 'react'
+import React, { useState, useEffect } from 'react';
 import { Chart } from 'primereact/chart';
+import Loading from './Loading'
+import { useAuth } from '@clerk/clerk-react';
+import axios from 'axios';
+import { Button } from 'primereact/button';
 
-function DoughnutChart() {
+const DoughnutChart = () => {
     const [chartData, setChartData] = useState({});
-    const [chartOptions, setChartOptions] = useState({});
-  
+    const { userId } = useAuth();
+    const [stepsCount, setStepsCount] = useState(0);
+    const [calories, setCalories] = useState(0);
+    const [waterDrink, setWaterDrink] = useState(0);
+
+    const fetchData = async () => {
+        try {
+            const stepsResponse = await axios.get(`http://localhost:4000/api/stepsCount/${userId}`);
+            setStepsCount(stepsResponse.data.currentSteps);
+
+            const caloriesResponse = await axios.get(`http://localhost:4000/api/caloriesBurned/${userId}`);
+            setCalories(caloriesResponse.data.caloriesBurned);
+
+            const waterIntakeResponse = await axios.get(`http://localhost:4000/api/waterIntake/${userId}`);
+            setWaterDrink(waterIntakeResponse.data.waterIntake);
+
+        } catch (error) {
+          console.error('Error fetching Doughnut data:', error);
+        }
+    };
+
     useEffect(() => {
-      setChartData({
-        labels: ['Calories', 'Steps'],
-        datasets: [
-          {
-            data: [300, 100],
-            backgroundColor: [
-              "#FF6384",
-              "#36A2EB"
-            ],
-            hoverBackgroundColor: [
-              "#FF6384",
-              "#36A2EB"
+        fetchData()
+    }, [userId])
+
+    useEffect(() => {
+        setChartData({
+            labels: [ 'Steps Count', 'Water Intake', 'Calories Burned'],
+            datasets: [
+                {
+                    data: [stepsCount, waterDrink, calories],
+                    backgroundColor: [ '#ab87ff', '#8db580', '#FF6384'],
+                    hoverBackgroundColor: [ '#ab87ff', '#8db580', '#FF6384'],
+                }
             ]
-          }
-        ]
-      });
-  
-      setChartOptions({
-        cutoutPercentage: 70,
-      });
-    }, []);
-  
-  return (
-    <>
-      <Suspense fallback={<div>Loading...</div>}>
-        <Chart type="doughnut" data={chartData} options={chartOptions} />
-      </Suspense>
-    </>
-  )
+        })
+    }, [stepsCount, waterDrink, calories])
+    
+    const chartOptions = {
+        cutoutPercentage: 50,
+        responsive: true,
+        plugins: {
+            legend: {
+                labels: {
+                    usePointStyle: true
+                }
+            }
+        }
+    };
+
+    return (
+        <>
+            {
+                chartData ? ( 
+                    <div>
+                        <Chart type="doughnut" data={chartData} options={chartOptions} /> 
+                        <Button icon="pi pi-refresh" onClick={fetchData}/>
+                    </div>
+                    
+                ) : ( <Loading /> )
+            }
+             
+        </>
+    )
 }
 
 export default DoughnutChart
+        

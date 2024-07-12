@@ -1,13 +1,63 @@
-import React from 'react'
+import React, { useState, useRef } from 'react'
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { FloatLabel } from 'primereact/floatlabel';
 import { Accordion, AccordionTab } from 'primereact/accordion';
+import { Toast } from 'primereact/toast';
+import axios from 'axios';
 import Constants from '../Constants';
                         
 
 const Contact = () => {
+  const toast = useRef(null);
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    firstname: '',
+    lastname: '',
+    email: '',
+    phone: '',
+    message: ''
+  })
+
+  
+  const showSuccess = () => {
+    toast.current.show({ severity: 'success', summary: 'Thank you', detail: 'We will get back to you soon' });
+  }
+
+  const showError = () => {
+    toast.current.show({ severity: 'error', summary: 'Error', detail: 'Please try again later' });
+  }
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      const response = await axios.post('http://localhost:4000/api/contact', formData);
+      console.log('Server Response - Contact Us Data ', response.data);
+      if (response.status === 201) {
+        showSuccess();
+        setLoading(false);
+        setFormData({
+          firstname: '',
+          lastname: '',
+          email: '',
+          phone: '',
+          message: ''
+        })
+      } else {
+          showError();
+      }
+    } catch (error) {
+      console.error('Server Error - Contact Us Data ', error);
+    }
+  }
+
+
   const FAQs = () => {
     return Constants.FAQs.map((faq, index) => {
       return (
@@ -48,41 +98,44 @@ const Contact = () => {
           </div>
 
           <div className="col-12 md:col-6">
-            <div className="p-fluid formgrid grid px-4 py-5 md:px-6 lg:px-8">
-              <div className="field col-12 lg:col-6 mb-4">
-                <FloatLabel>
-                  <InputText id="firstname" type="text" className="py-3 px-2 text-lg" name='firstname' />
-                  <label htmlFor="firstname">First Name</label>
-                </FloatLabel>
+            <form onSubmit={handleSubmit}>
+              <div className="p-fluid formgrid grid px-4 py-5 md:px-6 lg:px-8">
+                <Toast ref={toast} />
+                <div className="field col-12 lg:col-6 mb-4">
+                  <FloatLabel>
+                    <InputText required={true} id="firstname" type="text" className="py-3 px-2 text-lg" name='firstname' value={formData.firstname} onChange={handleChange}/>
+                    <label htmlFor="firstname">First Name</label>
+                  </FloatLabel>
+                </div>
+                <div className="field col-12 lg:col-6 mb-4">
+                  <FloatLabel>
+                    <InputText required={true} id="lastname" type="text" className="py-3 px-2 text-lg" name='lastname' value={formData.lastname} onChange={handleChange}/>
+                    <label htmlFor="lastname">Last Name</label>
+                  </FloatLabel>
+                </div>
+                <div className="field col-12 mb-4">
+                  <FloatLabel>
+                    <InputText required={true} id="email" type="email" className="py-3 px-2 text-lg" name='email' value={formData.email} onChange={handleChange} />
+                    <label htmlFor="email">Email</label>
+                  </FloatLabel>
+                </div>
+                <div className="field col-12 mb-4">
+                  <FloatLabel>
+                    <InputText required={true} id="phone" type="tel" className="py-3 px-2 text-lg" name='phone' value={formData.phone} onChange={handleChange} />
+                    <label htmlFor="phone">Phone</label>
+                  </FloatLabel>
+                </div>
+                <div className="field col-12 mb-4">
+                  <FloatLabel>
+                    <InputTextarea required={true} id="message" rows={5} cols={5} autoResize className="py-3 px-2 text-lg overflow-hidden" name="message" value={formData.message} onChange=  {handleChange} />
+                    <label htmlFor="message">Message</label>
+                  </FloatLabel>
+                </div>
+                <div className="col-12 text-right">
+                  <Button type="submit" className="px-5 py-3 w-auto" label='Submit' icon='pi pi-envelope' onClick={handleSubmit} disabled={loading} loading={loading} />
+                </div>
               </div>
-              <div className="field col-12 lg:col-6 mb-4">
-                <FloatLabel>
-                  <InputText id="lastname" type="text" className="py-3 px-2 text-lg" name='lastname'/>
-                  <label htmlFor="lastname">Last Name</label>
-                </FloatLabel>
-              </div>
-              <div className="field col-12 mb-4">
-                <FloatLabel>
-                  <InputText id="email" type="email" className="py-3 px-2 text-lg" name='email' />
-                  <label htmlFor="email">Email</label>
-                </FloatLabel>
-              </div>
-              <div className="field col-12 mb-4">
-                <FloatLabel>
-                  <InputText id="phone" type="tel" className="py-3 px-2 text-lg" name='phone' />
-                  <label htmlFor="phone">Phone</label>
-                </FloatLabel>
-              </div>
-              <div className="field col-12 mb-4">
-                <FloatLabel>
-                  <InputTextarea id="message" rows={5} cols={5} autoResize className="py-3 px-2 text-lg overflow-hidden" name="message" />
-                  <label htmlFor="message">Message</label>
-                </FloatLabel>
-              </div>
-              <div className="col-12 text-right">
-                <Button type="button" className="px-5 py-3 w-auto" label='Submit' icon='pi pi-envelope' />
-              </div>
-            </div>
+            </form>
           </div>
         </div>
       </div>

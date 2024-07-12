@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '@clerk/clerk-react';
+import { useAuth, useUser } from '@clerk/clerk-react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { Sidebar } from 'primereact/sidebar';
-import { Avatar } from 'primereact/avatar';
 import { Button } from 'primereact/button';
-import { InputText } from 'primereact/inputtext';
-import { Dumbbell, Home, Leaf, User } from 'lucide-react';        
+import { Dumbbell, Home, Leaf } from 'lucide-react';        
 
 const AdminLayout = () => {
     const {userId, isLoaded} = useAuth();
+    const { user , isSignedIn } = useUser();
     const navigate = useNavigate();
 
     console.log("userId", userId)
@@ -28,9 +27,13 @@ const AdminLayout = () => {
     ];
 
     const customHeader = (
-        <div className='flex flex-row align-items-center justify-content-between'>
-            <Avatar shape="circle" size="large" image='/user_avatar.jpg'/>
-            <h4 className='ml-3 text-white'>Hamza Hanif</h4>
+        <div className='flex flex-row align-items-center'>
+            {isSignedIn && 
+                <div>
+                    <h4 className='ml-3 text-white'>{user.fullName}</h4>
+                </div>
+            }
+            
         </div>
     );
 
@@ -56,12 +59,8 @@ const AdminLayout = () => {
                     </div>
                 </div>
             </Sidebar>
-            <header className='flex flex-row align-items-center justify-content-between p-3 surface-card gap-2'>
+            <header className='flex flex-row align-items-center p-3 surface-card gap-2'>
                 <Button icon="pi pi-bars" onClick={() => setVisible(true)} className='text-900' text/>
-                <div className='p-inputgroup w-18rem'>
-                    <InputText placeholder="Search" type='search'/>
-                    <Button icon="pi pi-search" severity='primary' />
-                </div>
             </header>
             
 
