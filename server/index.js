@@ -17,7 +17,7 @@ app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-mongoose.connect("mongodb://localhost:27017/fitnesstracker")
+mongoose.connect("mongodb+srv://hamzahanif1024:Aptech_1024@cluster0.ooypjb0.mongodb.net/fitnesstracker")
 .then(() => console.log("Database Connected"))
 .catch(err => console.log(err))
 
