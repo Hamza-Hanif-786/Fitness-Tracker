@@ -9,6 +9,7 @@ import stepsRouter from './routes/stepscount.js'
 import caloriesRouter from './routes/caloriesburned.js'
 import waterIntakeRouter from './routes/waterintake.js'
 import weightRouter from './routes/weight.js'
+import nutritionCategoriesRouter from './routes/nutritioncategories.js'
 
 const port = 4000
 const app = express()
@@ -17,7 +18,7 @@ app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-mongoose.connect("mongodb://localhost:27017/fitnesstracker")
+mongoose.connect("mongodb+srv://hamzahanif1024:Aptech_1024@cluster0.ooypjb0.mongodb.net/fitnesstracker")
 .then(() => console.log("Database Connected"))
 .catch(err => console.log(err))
 
@@ -29,6 +30,7 @@ app.use('/api/stepsCount', stepsRouter)
 app.use('/api/caloriesBurned', caloriesRouter)
 app.use('/api/waterIntake', waterIntakeRouter)
 app.use('/api/weightGoal', weightRouter)
+app.use('/api/nutrition-categories', nutritionCategoriesRouter)
 
 app.listen(port, () => {
     console.log("Server is Running on Port: " + port);
