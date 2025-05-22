@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ClerkProvider, SignedIn, SignedOut, UserButton } from '@clerk/clerk-react';
 import { Button } from 'primereact/button';
 import { Sidebar } from 'primereact/sidebar';
@@ -12,6 +12,8 @@ function RootLayout({ setTheme }) {
     const date = new Date();
     const year = date.getFullYear();
     const navigate = useNavigate();
+
+    // const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
     const PUBLISHABLE_KEY = "pk_test_dWx0aW1hdGUtcGlwZWZpc2gtMjcuY2xlcmsuYWNjb3VudHMuZGV2JA"
 
