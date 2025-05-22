@@ -56,16 +56,20 @@ nutritionCategoriesRouter.patch('/:id', async (req, res) => {
 });
 
 
-//4. Get Single Api
+// 4. Get Single Api
 nutritionCategoriesRouter.get('/:id', async (req, res) => {
-    try {
-        const nutritionCategory = await NutritionCategoriesModel.findOne(req.params.id)
-        res.status(200).json(nutritionCategory)
-    } catch (error) {
-        console.error('Server Error - Nutrition Category not fetched ', error)
-        res.status(500).json({ message: 'Nutrition Category could not be fetched' })
+  try {
+    const nutritionCategory = await NutritionCategoriesModel.findById(req.params.id);     // ✅ Correct method
+    if (!nutritionCategory) {
+      return res.status(404).json({ message: 'Nutrition Category not found' });
     }
-})
+    res.status(200).json(nutritionCategory);
+  } catch (error) {
+    console.error('Server Error - Nutrition Category not fetched ', error);
+    res.status(500).json({ message: 'Nutrition Category could not be fetched' });
+  }
+});
+
 
 
 
