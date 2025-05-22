@@ -27,19 +27,17 @@ const NutritionForm = () => {
         userId: userId
     })   
 
-    const fetchNutritionCategories = async () => {
-        try {
-            const response = await axios.get(`http://localhost:4000/api/nutrition-categories`)
-            setNutritionCategories(response.data)
-            console.log('Server Response: Frontend - Nutrition Categories Data ', response.data);
-        } catch (error) {
-            console.error('Error fetching nutrition categories:', error);
-        }
-    }
-
     useEffect(() => {
-        fetchNutritionCategories();
-    }, [])
+    axios.get(`http://localhost:4000/api/nutrition-categories`)
+      .then((res) => {
+        setNutritionCategories(res.data);
+        console.log('Nutrition categories:', res.data);
+      })
+      .catch((err) => {
+        console.error('Failed to fetch categories:', err);
+      });
+    }, []);
+
 
     const showSuccess = () => {
         toast.current.show({ severity: 'success', summary: 'Thank you', detail: 'Nutrition Added' });
@@ -66,13 +64,21 @@ const NutritionForm = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value })
     };
 
+    const handleNumberChange = (name, value) => {
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleCategoryChange = (e) => {
+        setFormData(prev => ({ ...prev, category: e.value }));
+    };
+
     const handleSubmittion = async (event) => {
         event.preventDefault();
         try {
             setLoading(true);
             const payload = {
                 ...formData,
-                category: formData.category._id // Assuming each category has an _id
+                category: formData.category?.categoryname || '' // Assuming each category has an _id
             };
             const response = await axios.post('http://localhost:4000/api/nutritions', payload);
             console.log('Server Response - Nutritions Data ', response.data);
@@ -87,21 +93,22 @@ const NutritionForm = () => {
                 notes: '',
                 userId: userId
               })
+                setVisible(false);
             } else {
                 showError();
             }
         } catch (error) {
             console.error('Server Error - Nutritions Data ', error);
+        } finally {
+            setLoading(false);
         }
     }
 
-    
-
   return (
     <>
+        <Toast ref={toast} />  
         <Button label='Add Nutrition Routine' onClick={() => setVisible(true)} icon='pi pi-plus'/>
-        <Dialog visible={visible} style={{ width: '50vw' }} header='Add Nutrition Routine' maximizable className='p-fluid' onHide={() => setVisible(false)}>
-            <Toast ref={toast} />   
+        <Dialog visible={visible} style={{ width: '50vw' }} header='Add Nutrition Routine' maximizable className='p-fluid' onHide={() => setVisible(false)}> 
             <form onSubmit={handleSubmittion}>
                 <div className='field'>
                     <label htmlFor="title" className='block font-medium text-900'>
@@ -114,7 +121,7 @@ const NutritionForm = () => {
                         <label htmlFor="category" className='block font-medium text-900'>
                             Category<span className='text-red-500'>*</span>
                         </label>
-                        <span className='text-sm text-600'>{formData.category}</span>  
+                        {/* <span className='text-sm text-600'>{formData.category}</span>   */}
                     </div>
                     {/* <div className='flex flex-wrap align-items-center mb-3 mt-2 gap-2'>
                         {Meals.map((meal, index) => (
@@ -124,7 +131,17 @@ const NutritionForm = () => {
                             </div>
                         ))}
                     </div>    */}
-                    <Dropdown value={formData.category} options={nutritionCategories} onChange={(e) => setFormData({ ...formData, category: e.value })} optionLabel="categoryname" name='category' placeholder="Select a category" className='w-full' />
+                    <Dropdown 
+                        value={formData.category} 
+                        options={nutritionCategories} 
+                        onChange={handleCategoryChange} 
+                        optionLabel="categoryname" 
+                        name='category'
+                        id='category' 
+                        placeholder="Select a category" 
+                        className='w-full'
+                        required 
+                    />
                 </div>
                 <div className='grid formgrid'>
                     <div className='field col'>
@@ -132,7 +149,7 @@ const NutritionForm = () => {
                             Calories<span className='text-red-500'>*</span>
                         </label>
                         <InputNumber min={0} inputId='calories' className='w-full' name='calories' placeholder='100 calories' required useGrouping={false} suffix='  calories' value={formData.calories} 
-                            onValueChange={handleChange} 
+                            onValueChange={(e) => handleNumberChange("calories", e.value)} 
                         />
                     </div>
                     <div className='field col'>
@@ -140,7 +157,7 @@ const NutritionForm = () => {
                             Protein<span className='text-red-500'>*</span>
                         </label>
                         <InputNumber min={0} inputId='protein' className='w-full' name='protein' placeholder='150 protein' required useGrouping={false} suffix='  protein' value={formData.protein} 
-                            onValueChange={handleChange} 
+                            onValueChange={(e) => handleNumberChange("protein", e.value)} 
                         />
                     </div>
                 </div>
@@ -150,7 +167,7 @@ const NutritionForm = () => {
                     </label>
                     <InputTextarea value={formData.notes} onChange={handleChange} autoResize rows={5} className='w-full' name='notes' />    
                 </div>
-                <Button severity='primary' className='w-full' onClick={handleSubmittion} label='Submit' loading={loading} disabled={loading} />
+                <Button type='submit' severity='primary' className='w-full' label='Submit' loading={loading} disabled={loading} />
             </form>
         </Dialog>
     </>
