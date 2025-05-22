@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@clerk/clerk-react';
 import { InputText } from 'primereact/inputtext'
 import { InputNumber } from 'primereact/inputnumber';
-import { Meals } from '../Constants';
+// import { Meals } from '../Constants';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { InputTextarea } from 'primereact/inputtextarea';
+import { Dropdown } from 'primereact/dropdown';
 import { Toast } from 'primereact/toast';
 import axios from 'axios';              
 
@@ -14,15 +15,31 @@ const NutritionForm = () => {
     const { userId } = useAuth();
     const [visible, setVisible] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [activeIndex, setActiveIndex] = useState(0);
+    // const [activeIndex, setActiveIndex] = useState(0);
+    const [nutritionCategories, setNutritionCategories] = useState([]);
+    // const [selectedCategory, setSelectedCategory] = useState(null);
     const [formData, setFormData] = useState({
         title: '',
-        category: Meals[0].title,
+        category: null,
         calories: null,
         protein: null,
         notes: '',
         userId: userId
     })   
+
+    const fetchNutritionCategories = async () => {
+        try {
+            const response = await axios.get(`http://localhost:4000/api/nutrition-categories`)
+            setNutritionCategories(response.data)
+            console.log('Server Response: Frontend - Nutrition Categories Data ', response.data);
+        } catch (error) {
+            console.error('Error fetching nutrition categories:', error);
+        }
+    }
+
+    useEffect(() => {
+        fetchNutritionCategories();
+    }, [])
 
     const showSuccess = () => {
         toast.current.show({ severity: 'success', summary: 'Thank you', detail: 'Nutrition Added' });
@@ -32,13 +49,14 @@ const NutritionForm = () => {
         toast.current.show({ severity: 'error', summary: 'Error', detail: 'Please try again later' });
     }
 
-    const handleCategorySelect = (event) => {
-        setActiveIndex(event.index);
-        setFormData({
-            ...formData,
-            category: Meals[event.index].title
-        })
-    }
+    // const handleCategorySelect = (event) => {
+    //     setActiveIndex(event.index);
+    //     setFormData({
+    //         ...formData,
+    //         category: Meals[event.index].title
+    //     })
+    // }
+
 
     useEffect(() => {
         console.log(formData.category)
@@ -52,14 +70,18 @@ const NutritionForm = () => {
         event.preventDefault();
         try {
             setLoading(true);
-            const response = await axios.post('http://localhost:4000/api/nutritions', formData);
+            const payload = {
+                ...formData,
+                category: formData.category._id // Assuming each category has an _id
+            };
+            const response = await axios.post('http://localhost:4000/api/nutritions', payload);
             console.log('Server Response - Nutritions Data ', response.data);
             if (response.status === 201) {
               showSuccess();
               setLoading(false);
               setFormData({
                 title: '',
-                category: Meals[0].title,
+                category: null,
                 calories: null,
                 protein: null,
                 notes: '',
@@ -94,14 +116,15 @@ const NutritionForm = () => {
                         </label>
                         <span className='text-sm text-600'>{formData.category}</span>  
                     </div>
-                    <div className='flex flex-wrap align-items-center mb-3 mt-2 gap-2'>
+                    {/* <div className='flex flex-wrap align-items-center mb-3 mt-2 gap-2'>
                         {Meals.map((meal, index) => (
                             <div className={`surface-card p-3 border-round-xl border-3 ${activeIndex === index ? 'border-primary' : 'border-100'} hover:border-primary hover:border-3 flex flex-column transition-duration-150 transition-colors`} key={index} onClick={() => handleCategorySelect({index}, index)}>
                                 <img src={meal.image} alt={meal.title} className='w-7rem h-7rem' />
                                 <span className='mt-3 font-medium text-900 text-sm text-center'>{meal.title}</span>
                             </div>
                         ))}
-                    </div>   
+                    </div>    */}
+                    <Dropdown value={formData.category} options={nutritionCategories} onChange={(e) => setFormData({ ...formData, category: e.value })} optionLabel="categoryname" name='category' placeholder="Select a category" className='w-full' />
                 </div>
                 <div className='grid formgrid'>
                     <div className='field col'>

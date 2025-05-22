@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Meals } from '../Constants'
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext';

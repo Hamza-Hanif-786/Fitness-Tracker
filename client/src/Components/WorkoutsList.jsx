@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { useAuth } from '@clerk/clerk-react'
 import StrenghtTraining from '/strength_training.svg'
 import Cardio from '/cardio.svg'
@@ -77,13 +77,13 @@ const WorkoutsList = () => {
           <div className='col-12 md:col-6 lg:col-4 xl:col-3 p-3' key={workout._id}>
             <div className='border-round-3xl h-full shadow-2 surface-ground'>
               <img src={workout.category === Workouts[0].title ? StrenghtTraining : workout.category === Workouts[1].title ? Cardio : FlexibilityYoga} alt={workout.category} className='w-full h-10rem border-round-top' />
-              <div className='border-1 border-gray-300 border-round-3xl px-4 py-2 surface-card'>
+              <div className='border-1 border-gray-300 border-round-3xl px-4 pt-2 pb-3 surface-card'>
                 <h2 className='text-2xl font-bold mb-2' style={{overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: '1', WebkitBoxOrient: 'vertical'}}>{workout.title}</h2>
                 <p className='text-gray-600 mb-2'>{workout.category}</p>
                 <p className='text-gray-600 mb-2'>Reps: {workout.reps}</p>
                 <p className='text-gray-600 mb-2'>Sets: {workout.sets}</p>
                 <p className='text-gray-600 mb-2'>Date: {moment(workout.date).format('MMMM Do YYYY')}</p>
-                <p className='text-gray-600 mb-2' style={{overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: '4', WebkitBoxOrient: 'vertical'}}>Notes: {workout.notes ? workout.notes : '----------'}</p>
+                <p className='text-gray-600 mb-3' style={{overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: '4', WebkitBoxOrient: 'vertical'}}>Notes: {workout.notes ? workout.notes : '----------'}</p>
                 <Button severity='danger' icon="pi pi-trash" onClick={() => deleteWorkout(workout._id)} size='small' className='w-full'/>
               </div> 
             </div>   

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import 'primereact/resources/primereact.min.css'; //core css
 import 'primeicons/primeicons.css'; //icons
 import 'primeflex/primeflex.css'; // flex
@@ -10,6 +10,7 @@ import Home from './routes/Home';
 import Contact from './routes/Contact';
 import About from './routes/About';
 import Dashboard from'./routes/Dashboard';
+import Categories from './routes/Categories';
 import Workout from './routes/Workout';
 import Nutrition from "./routes/Nutrition";
 import MySignIn from './routes/MySignIn';
@@ -47,6 +48,7 @@ function App() {
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="Workout" element={<Workout />} />
               <Route path="Nutrition" element={<Nutrition />} />
+              <Route path="Categories" element={<Categories />} />
             </Route>
           </Route>
         </Routes>
