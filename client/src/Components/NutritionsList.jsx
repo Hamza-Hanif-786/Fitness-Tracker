@@ -87,7 +87,7 @@ const NutritionsList = () => {
                 <p className='text-gray-600 mb-2'>Protein: {nutrition.protein}</p>
                 <p className='text-gray-600 mb-2'>Date: {moment(nutrition.date).format('MMMM Do YYYY')}</p>
                 <p className='text-gray-600 mb-2' style={{overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: '4', WebkitBoxOrient: 'vertical'}}>Notes: {nutrition.notes ? nutrition.notes : '----------'}</p>
-                <Button severity='danger' icon="pi pi-trash" onClick={() => deleteNutrition(nutrition._id)} size='small' className='w-full'/>
+                <Button severity='danger' icon="pi pi-trash" onClick={() => deleteNutrition(nutrition._id)} size='small' className='w-full my-4'/>
               </div> 
             </div>   
           </div>
